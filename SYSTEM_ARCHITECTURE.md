@@ -53,7 +53,7 @@ AI Application / Agent / RAG
 ## 4. Repository responsibilities
 
 ### factlama-architecture
-System-level source of truth. Owns product boundaries, cross-repository contracts, architecture decisions, security/privacy principles, deployment modes, roadmap, and Claude implementation governance.
+System-level source of truth. Owns product boundaries, cross-repository contracts, architecture decisions, security/privacy principles, deployment modes, roadmap, component documentation/task ledgers, and agent implementation guidance.
 
 ### factlama-reliability
 Owns claims, evidence, judge abstraction, evaluation pipeline, scoring, policy decisions, provenance, RAG evaluation, and agent/tool evaluation.

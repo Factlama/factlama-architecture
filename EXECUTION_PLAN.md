@@ -1,10 +1,10 @@
 # Cross-repository execution plan
 
-This is the **build order and integration gate** for the three initial repositories. It is a target plan, not an assertion that code exists. [ROADMAP.md](ROADMAP.md) owns EPIC status; the Reliability and Observability `docs/implementation.md` files own REL/OBS task status. All implementation statuses remain `NOT_STARTED` until their own acceptance tests pass. [CONTRACTS.md](CONTRACTS.md) and ADR-001–015 are the architecture baseline. Implement a thin, tested vertical slice at each gate; avoid creating every future module up front.
+This is the **build order and integration gate** for the three initial repositories. It is a target plan, not an assertion that code exists. [ROADMAP.md](ROADMAP.md) owns EPIC status; the centralized [Reliability](factlama-reliability/docs/implementation.md) and [Observability](factlama-observability/docs/implementation.md) task ledgers own REL/OBS status. All implementation statuses remain `NOT_STARTED` until their own acceptance tests pass. [CONTRACTS.md](CONTRACTS.md) and ADR-001–016 are the architecture baseline. Implement a thin, tested vertical slice at each gate; avoid creating every future module up front.
 
 ADR acceptance and the document contract are complete, but **G0 is not closed**: executable canonical fixtures and cross-repo compatibility tests still need implementation. No gate is marked complete by this plan.
 
-The implementation-repo low-level checklists predate ADR-010–015. G0 includes updating Reliability's `domain-model.md`, `judge-provider.md`, `scoring.md`, `verification-pipeline.md`, `LOW_LEVEL_IMPLEMENTATION.md`, plus new `evaluator-agreement-harness.md` and `evaluator-registry.md`; Observability must update `telemetry-model.md`, `storage-query.md`, `dashboard.md` and `LOW_LEVEL_IMPLEMENTATION.md`. Those edits belong in their owning repos and are prerequisites for coding against this version of the shared contract.
+The centralized low-level checklists predate ADR-010–015. G0 includes updating Reliability's `domain-model.md`, `judge-provider.md`, `scoring.md`, `verification-pipeline.md`, `LOW_LEVEL_IMPLEMENTATION.md`, plus new `evaluator-agreement-harness.md` and `evaluator-registry.md`; Observability must update `telemetry-model.md`, `storage-query.md`, `dashboard.md` and `LOW_LEVEL_IMPLEMENTATION.md`. Those documentation edits belong in the component folders in this architecture repo and are prerequisites for coding against this version of the shared contract.
 
 ## Dependency graph
 

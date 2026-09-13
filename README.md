@@ -1,6 +1,6 @@
 # FactLama Architecture
 
-Start with [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for build order, dependencies and exit tests, then [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) for component ownership. [CONTRACTS.md](CONTRACTS.md) owns the cross-repository wire contract; [DECISION_REGISTER.md](DECISION_REGISTER.md) indexes ADRs and status sources. [SECURITY_MODEL.md](SECURITY_MODEL.md), [OPERATIONS.md](OPERATIONS.md), [INTERACTION_STORE.md](INTERACTION_STORE.md) and [VALIDATION.md](VALIDATION.md) define cross-cutting requirements. Component `docs/LOW_LEVEL_IMPLEMENTATION.md` files explain the code to build; their `docs/implementation.md` files own task status.
+Start with [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for build order and exit tests, then [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) for component ownership. Component documentation is centralized in [factlama-reliability](factlama-reliability/README.md) and [factlama-observability](factlama-observability/README.md), including each component's `docs/implementation.md` task ledger. [CONTRACTS.md](CONTRACTS.md) owns the shared wire contract; [DECISION_REGISTER.md](DECISION_REGISTER.md) indexes ADRs and status sources. [SECURITY_MODEL.md](SECURITY_MODEL.md), [OPERATIONS.md](OPERATIONS.md), [INTERACTION_STORE.md](INTERACTION_STORE.md) and [VALIDATION.md](VALIDATION.md) define cross-cutting requirements.
 
 FactLama is an open-source AI reliability and observability platform for LLM, RAG, and agentic applications.
 
@@ -551,6 +551,9 @@ Accepted. The evaluator registry has an explicit lifecycle and audit trail, mode
 Accepted. Multi-judge ensembles stay out of MVP scope, but provenance and finding shapes are provisioned in v0.1 so that adding them later is additive rather than a breaking change.
 
 See [ANY_JUDGE_ARCHITECTURE_REVIEW.md](ANY_JUDGE_ARCHITECTURE_REVIEW.md) for the analysis behind ADR-010 through ADR-015.
+
+### ADR-016 - Centralized component documentation
+Accepted. Reliability and Observability component specs and task ledgers live in this architecture repository; code repositories retain short README and agent entrypoints.
 
 ## Definition of MVP done
 

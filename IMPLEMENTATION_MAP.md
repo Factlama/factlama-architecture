@@ -15,7 +15,7 @@ This is the reviewer’s one-page map. It describes target code, not completed w
 | Dashboard | Overview, Requests/Trace, Reliability and Models views, filters, explicit no-data/pending/error states | Reviewer can navigate from request to trace to claim result and explain each metric |
 | Local stack | Compose services, persistent DB, migrations, sample app/tenant, smoke test | Fresh checkout runs a complete trace/evaluation/dashboard path |
 
-Use [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for the dependency order and cross-repo exit tests. Existing component checklists are [Reliability](https://github.com/Factlama/factlama-reliability/blob/main/docs/LOW_LEVEL_IMPLEMENTATION.md) and [Observability](https://github.com/Factlama/factlama-observability/blob/main/docs/LOW_LEVEL_IMPLEMENTATION.md); they must be brought into alignment with ADR-010–015 as the owning implementation tasks start. Deferred features (own SLM, vector retrieval, interaction replay, enterprise SSO/Kubernetes, multi-judge ensembles) stay on the roadmap and are not part of this MVP acceptance path.
+Use [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for the dependency order and cross-repo exit tests. The centralized component checklists are [Reliability](factlama-reliability/docs/LOW_LEVEL_IMPLEMENTATION.md) and [Observability](factlama-observability/docs/LOW_LEVEL_IMPLEMENTATION.md); they must be brought into alignment with ADR-010–015 as the owning implementation tasks start. Deferred features (own SLM, vector retrieval, interaction replay, enterprise SSO/Kubernetes, multi-judge ensembles) stay on the roadmap and are not part of this MVP acceptance path.
 
 ## Reference implementation decisions
 

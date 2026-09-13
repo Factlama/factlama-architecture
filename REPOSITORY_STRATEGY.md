@@ -30,4 +30,4 @@ A module becomes a separate repository only when at least one of these is true:
 
 ## Ownership rule
 
-Architecture defines cross-repository contracts. Implementation repositories may propose ADRs but must not silently redefine system boundaries.
+Architecture owns cross-repository contracts and the `factlama-reliability/` and `factlama-observability/` documentation folders, including their task ledgers. Implementation repositories contain source, tests, examples, a short README, and `CLAUDE.md`/`CODEX.md` entrypoints (with `AGENTS.md` for Codex discovery). They may propose ADRs but must not silently redefine system boundaries. A code change that affects documented behavior updates the corresponding architecture-owned component docs in the same review cycle.
