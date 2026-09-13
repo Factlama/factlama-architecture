@@ -21,6 +21,8 @@ FactLama must support organizations that cannot persist raw AI interaction conte
 
 The future Interaction Store may persist prompts, responses, evidence, tool calls/results, judge outputs, and decisions for replay/regression workflows. It is not an MVP dependency and must be explicitly enabled.
 
+Metadata-only capture does not mean content never leaves the tenant environment: an approved external judge call may transmit prompt/answer/evidence content. Provider hosting region, training/retention terms and subprocessors are therefore checked before primary or fallback dispatch. If none satisfy tenant constraints, evaluation abstains rather than sending content to a noncompliant provider. Because metadata-only mode does not retain an evidence snapshot, cross-version re-scoring of historical interactions is unavailable unless a tenant separately opted into sufficient content capture; historical result metadata remains inspectable.
+
 ## Required metadata without raw content
 
 FactLama should still retain, subject to tenant policy: correlation IDs, timestamps, model/provider/version, evaluator/version, prompt version identifier, token counts, latency, cost, reliability scores, verdict, violations, policy decision, and hashes/references where useful.

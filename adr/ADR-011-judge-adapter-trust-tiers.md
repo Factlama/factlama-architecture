@@ -1,6 +1,6 @@
 # ADR-011: Judge Adapter Trust Tiers
 
-Status: Proposed
+Status: Accepted
 
 Decision: Judge adapters are split into three trust tiers. **T0 (first-party)**: FactLama-authored adapters (e.g. openai, anthropic, azure), in-process, under FactLama code review and CI. **T1 (certified partner)**: in-process but signed, version-pinned, code-reviewed, with a conformance run and an agreement report (ADR-010) on file before an operator installs them. **T2 (customer judge)**: out of process, always. FactLama publishes `JudgeProvider` as an HTTP wire schema — a small step from the existing one-claim-in/one-verdict-out port in CONTRACTS.md — and the customer operates the endpoint. FactLama calls it over mTLS through an egress proxy enforcing a per-provider host allowlist, a bounded payload size, and a hard deadline; the endpoint never receives FactLama's database connection, job queue, or any secret beyond what the call itself requires. Secret resolution is authorized per call, scoped to `(tenant_id, provider_id)` for the evaluation in flight — not a general-purpose lookup available to adapter code. Free-text judge rationale is rendered as inert text in the dashboard, never as HTML or markdown capable of producing links or images.
 

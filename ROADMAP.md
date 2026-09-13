@@ -1,5 +1,7 @@
 # FactLama Roadmap
 
+Use [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for the cross-repository order, dependencies, handoffs and exit tests. This file alone owns EPIC status. ADR-010–015 are accepted architecture decisions; their implementation remains `NOT_STARTED`.
+
 Status values: `NOT_STARTED`, `IN_PROGRESS`, `BLOCKED`, `COMPLETE`.
 
 Claude must update task status only after acceptance criteria and tests pass.
@@ -22,6 +24,8 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Cross-tenant negative tests.
 - [ ] Secret/provider credential boundaries.
 - [ ] Capture/redaction configuration model.
+- [ ] Separate provider registration, tenant approval, credential use and content-read permissions.
+- [ ] Enforce judge-egress destination, secret-scope and adapter trust-tier boundaries before opening customer judges.
 
 **Exit:** cross-tenant access fails safely; metadata-only operation works.
 
@@ -31,7 +35,13 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Versioned VerificationRequest/VerificationResult.
 - [ ] Claim/Evidence/Violation/Score/Verdict types.
 - [ ] Evaluator/model/configuration provenance.
+- [ ] `calibration_class` and qualification status on scores/events.
+- [ ] Ordered `attempts[]` with usage, and claim `contributing_judgments[]`.
+- [ ] Reserve `DISPUTED`, `JUDGE_DISAGREEMENT`, `EVIDENCE_INJECTION_SUSPECTED` and `BUDGET_EXHAUSTED` semantics.
+- [ ] Versioned routing profile, usage summary and `supersedes` lineage.
 - [ ] Contract serialization tests.
+
+**Exit:** the worked fixture and negative variants round-trip in both implementation repos; no scalar-only provider assumption remains.
 
 ### EPIC-04 First groundedness evaluator — STATUS: NOT_STARTED
 - [ ] Claim extraction/segmentation.
@@ -41,6 +51,20 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Claim-level supported/contradicted/unsupported/insufficient findings.
 - [ ] Transparent scoring and overall verdict.
 - [ ] Golden evaluation tests.
+- [ ] Enforce one-claim-per-call, evidence instruction/data separation and deterministic response validation.
+- [ ] Enforce per-request/per-tenant token/cost ceilings and claim/evidence fan-out caps before dispatch, including retry/fallback accounting.
+- [ ] Record judge attempt usage/cost; BYO-key is the default.
+- [ ] Include adversarial-evidence fixtures and injection-suspected policy routing.
+
+**Exit:** a T0 adapter produces valid supported/contradicted/unsupported/insufficient findings, while timeout, exhausted budget and suspected injection cannot silently produce PASS.
+
+### EPIC-04b Evaluator agreement and qualification harness — STATUS: NOT_STARTED
+- [ ] Public development and FactLama-held-out fixture sets with leakage controls.
+- [ ] One-command conformance and agreement runner for every adapter.
+- [ ] Versioned report with per-label quality, adversarial cases, latency, tokens and cost.
+- [ ] Calibration-class derivation and a minimal pinned/approved default-judge gate.
+
+**Exit:** the first T0 adapter has a reproducible agreement report and cannot become a tenant's default judge without `QUALIFIED` and tenant approval. EPIC-12 reuses this harness for the SLM.
 
 ### EPIC-05 Content governance — STATUS: NOT_STARTED
 - [ ] NONE/METADATA_ONLY/REDACTED/FULL capture modes.
@@ -53,12 +77,18 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Idempotency keys.
 - [ ] Retry/backoff/terminal failures.
 - [ ] Duplicate delivery tests.
+- [ ] Ordered attempt provenance, dispute representation and budget accounting across retries/fallback.
 
 ### EPIC-07 Evaluator ecosystem — STATUS: NOT_STARTED
-- [ ] Provider registry.
-- [ ] Second/custom provider path.
+- [ ] Full audited registry lifecycle, conformance and agreement gates, pinned non-aliased model versions.
+- [ ] T1 signed/reviewed adapter gate and T2 customer HTTP wire schema with mTLS, egress allowlist and per-call secret scope.
+- [ ] Tenant compliance constraints on primary and fallback provider selection, including judge-egress residency.
+- [ ] Revocation propagation, scheduled agreement canary, per-provider bulkheads and circuit breakers.
+- [ ] Second/custom provider path only after those gates pass.
 - [ ] Evaluator/config versioning.
 - [ ] Normalized timeout/error handling.
+
+**Exit:** two adapters pass the same conformance suite; T2 code is out of process; revoked, drifting or noncompliant providers cannot be selected by default or fallback.
 
 ### EPIC-08 Policy and routing — STATUS: NOT_STARTED
 - [ ] Policy input/action model.
@@ -75,6 +105,7 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Query API.
 - [ ] Trace/evaluation correlation.
 - [ ] FactLama self-observability.
+- [ ] Judge usage/cost event ingestion and calibration-class-aware score aggregation.
 
 ## Phase D — Native Dashboard
 
@@ -84,6 +115,8 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Reliability view.
 - [ ] Trace explorer.
 - [ ] RAG/agent foundations.
+- [ ] Show qualification/calibration class, judge attempt/cost provenance, and mixed-class trend markers.
+- [ ] Render judge rationale as inert text; distinguish disputed, abstained and failed results.
 
 ## Phase E — SDK/Collector/Integrations
 
@@ -96,7 +129,7 @@ Claude must update task status only after acceptance criteria and tests pass.
 ## Phase F — FactLama SLM and Benchmarks
 
 ### EPIC-12 SLM/benchmark foundation — STATUS: NOT_STARTED
-- [ ] Benchmark datasets/harness.
+- [ ] Reuse EPIC-04b's provider-neutral harness; add SLM-specific datasets/training workflow only where needed.
 - [ ] Baseline strong judges/human labels.
 - [ ] Accuracy/precision/recall/F1/calibration/latency/token/cost reporting.
 - [ ] SLM adapter/runtime only after benchmarks justify it.

@@ -5,3 +5,5 @@ Status: Accepted
 The FactLama SLM is an optional low-cost evaluator, not the platform itself.
 
 It must earn routing preference through benchmark results covering accuracy, precision, recall, F1, calibration, latency, token use, and cost. The platform must continue to support enterprise-approved and custom judges.
+
+ADR-010 supersedes the SLM-only asymmetry of this gate: every evaluator needs qualification before it can be a tenant's default judge. The SLM remains optional.

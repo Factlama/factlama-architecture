@@ -1,5 +1,7 @@
 # Architecture memo: what the "any judge" pivot costs us
 
+> Historical analysis: ADR-010–015 were accepted after this memo. Its proposed work list and open questions record the reasoning at the time; [EXECUTION_PLAN.md](EXECUTION_PLAN.md), [CONTRACTS.md](CONTRACTS.md) and the accepted ADRs are the current implementation baseline.
+
 **Author:** architecture lead
 **Date:** 2026-09-13
 **Status:** working memo — input to ADR-010..015 and a ROADMAP.md resequencing proposal

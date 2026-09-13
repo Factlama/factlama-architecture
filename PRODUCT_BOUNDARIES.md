@@ -26,3 +26,7 @@ OTEL-compatible ingestion, AI telemetry, traces, metrics, token/cost/latency/err
 
 ## Principle
 Simple by default, interoperable by design.
+
+## Judge-call economics
+
+The default and only initial economic model is bring-your-own-key: tenants provide approved provider credentials and pay providers directly. FactLama enforces verification budgets and reports judge usage/cost, but does not broker or mark up model calls. A hosted/brokered tier would require a new ADR and abuse/billing model.

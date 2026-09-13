@@ -1,6 +1,6 @@
 # ADR-015: Deferred Multi-Judge Reconciliation
 
-Status: Proposed
+Status: Accepted
 
 Decision: Multi-judge consensus/ensembles remain out of MVP scope, staying in Future scope as today. However, the v0.1 contract is shaped so that adding ensembles later is additive, not breaking: `provenance` carries an `attempts[]` array (one entry in MVP) rather than a single scalar provider/model/config, and a claim finding carries `contributing_judgments[]` (empty or single in MVP). Disagreement between judgments — including today's sequential-fallback case, where an initial and a retried attempt may disagree — is represented explicitly (a reserved `JUDGE_DISAGREEMENT` violation code and a `DISPUTED` state) rather than collapsed into `ABSTAIN` or `INSUFFICIENT_EVIDENCE`, which would misstate the reason. No design in the verification pipeline may assume exactly one judgment per claim.
 

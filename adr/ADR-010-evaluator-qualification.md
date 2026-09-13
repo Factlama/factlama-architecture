@@ -1,6 +1,6 @@
 # ADR-010: Evaluator Qualification and Calibration Classes
 
-Status: Proposed
+Status: Accepted
 
 Decision: Every evaluator — the FactLama SLM, a frontier provider, or an enterprise-internal or partner judge — carries a `calibration_class`: a stable identity derived from `(evaluator_id, evaluator_version, provider_id, model_id, configuration_version, qualification_status)`. `calibration_class` is recorded on every score object and on `ReliabilityEvent`. Scores are comparable only within a calibration class; any aggregate spanning classes must group by class or be labeled mixed, on the same principle CONTRACTS.md already applies to currency in cost totals. An evaluator's `qualification_status` is `QUALIFIED` only after it has a published agreement report against the golden evaluation set (a held-out portion FactLama controls, plus a public dev portion a provider can self-test against before submitting). Providers without a report remain usable — "any judge" must not become "any judge we've certified" — but are `UNQUALIFIED` or `PROVISIONAL`, excluded from cross-provider aggregates, and excluded from being a tenant's default judge.
 

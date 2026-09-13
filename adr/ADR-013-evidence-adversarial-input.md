@@ -1,6 +1,6 @@
 # ADR-013: Evidence as Adversarial Input at the Judge Boundary
 
-Status: Proposed
+Status: Accepted
 
 Decision: Evidence content is treated as untrusted, potentially adversarial input at the judge boundary, not merely as unproven input. Containment, not prevention: (1) judge prompt templates apply structural instruction/data separation, versioned as part of `configuration_version` — evidence is delimited, labeled as data, and framed as never carrying instructions; (2) the one-claim-per-call shape in CONTRACTS.md is documented in SECURITY_MODEL.md as a security property, bounding an injection payload's blast radius to one claim's verdict, and may not be widened into a batched multi-claim call without a new ADR; (3) deterministic post-validation is strengthened — a `SUPPORTED` verdict with zero cited evidence IDs is `INVALID_RESPONSE`, and a cheap non-model overlap check between claim and cited evidence span downgrades unsupported-by-overlap results to `INSUFFICIENT_EVIDENCE` with a violation; (4) a pattern-based scan over evidence content sets a new violation code, `EVIDENCE_INJECTION_SUSPECTED`, and routes to `HUMAN_REVIEW` via policy — evidence is never silently dropped, since that would change the factual basis of the verdict; (5) the golden evaluation set gains an adversarial-evidence fixture family, run against every registered adapter so injection resistance becomes a measured, per-provider property rather than an assumption.
 

@@ -1,6 +1,6 @@
 # FactLama Architecture
 
-Start with [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) for the component-by-component MVP and review checks. [CONTRACTS.md](CONTRACTS.md) owns the cross-repository wire contract; [DECISION_REGISTER.md](DECISION_REGISTER.md) indexes ADRs and status sources. [SECURITY_MODEL.md](SECURITY_MODEL.md), [OPERATIONS.md](OPERATIONS.md), [INTERACTION_STORE.md](INTERACTION_STORE.md) and [VALIDATION.md](VALIDATION.md) define cross-cutting requirements. Component `docs/LOW_LEVEL_IMPLEMENTATION.md` files explain the code to build; their `docs/implementation.md` files own task status.
+Start with [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for build order, dependencies and exit tests, then [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) for component ownership. [CONTRACTS.md](CONTRACTS.md) owns the cross-repository wire contract; [DECISION_REGISTER.md](DECISION_REGISTER.md) indexes ADRs and status sources. [SECURITY_MODEL.md](SECURITY_MODEL.md), [OPERATIONS.md](OPERATIONS.md), [INTERACTION_STORE.md](INTERACTION_STORE.md) and [VALIDATION.md](VALIDATION.md) define cross-cutting requirements. Component `docs/LOW_LEVEL_IMPLEMENTATION.md` files explain the code to build; their `docs/implementation.md` files own task status.
 
 FactLama is an open-source AI reliability and observability platform for LLM, RAG, and agentic applications.
 
@@ -521,7 +521,7 @@ Accepted. Reliability core must never depend directly on a specific model provid
 Accepted. FactLama verifies against supplied evidence first; it is not a generic RAG system.
 
 ### ADR-006 - SLM is optional and benchmark-gated
-Accepted. The SLM is a potential low-cost evaluator, not the platform. It enters routing only after objective benchmarks support it.
+Accepted, with its SLM-only qualification asymmetry superseded by ADR-010. The SLM is a potential low-cost evaluator, not the platform; it follows the same qualification rule as every judge.
 
 ### ADR-007 - Native AI dashboard
 Accepted. Build a lightweight AI-specific dashboard for users without an existing observability stack, while retaining enterprise export/integration paths.
@@ -533,22 +533,22 @@ Accepted. Design for optional interaction persistence and replay now, but do not
 Accepted. Use Python services and SDK, a TypeScript dashboard, PostgreSQL metadata/job outbox, and maintained OTLP/HTTP libraries for the first implementation; preserve language-independent public contracts.
 
 ### ADR-010 - Evaluator qualification and calibration classes
-Proposed. Any evaluator, not only the FactLama SLM, must carry a calibration class and earn a benchmark-backed qualification status before becoming a tenant's default judge; scores are comparable only within a calibration class.
+Accepted. Any evaluator, not only the FactLama SLM, must carry a calibration class and earn a benchmark-backed qualification status before becoming a tenant's default judge; scores are comparable only within a calibration class.
 
 ### ADR-011 - Judge adapter trust tiers
-Proposed. Judge adapters split into first-party (in-process), certified partner (in-process, signed and conformance-tested), and customer (out-of-process only, over a published HTTP wire schema, with no access to FactLama's database or secrets beyond the call in flight).
+Accepted. Judge adapters split into first-party (in-process), certified partner (in-process, signed and conformance-tested), and customer (out-of-process only, over a published HTTP wire schema, with no access to FactLama's database or secrets beyond the call in flight).
 
 ### ADR-012 - Verification budgets and cost ownership
-Proposed. Verification enforces per-request/per-tenant token and cost budgets and claim/evidence fan-out caps; bring-your-own-key is the default and only economic model for judge calls.
+Accepted. Verification enforces per-request/per-tenant token and cost budgets and claim/evidence fan-out caps; bring-your-own-key is the default and only economic model for judge calls.
 
 ### ADR-013 - Evidence as adversarial input at the judge boundary
-Proposed. Evidence is treated as untrusted, potentially adversarial input, with structural instruction/data separation, deterministic post-validation, detection (not silent dropping) of suspected injection, and adversarial fixtures run against every registered adapter.
+Accepted. Evidence is treated as untrusted, potentially adversarial input, with structural instruction/data separation, deterministic post-validation, detection (not silent dropping) of suspected injection, and adversarial fixtures run against every registered adapter.
 
 ### ADR-014 - Provider lifecycle, pinning and compliance constraints
-Proposed. The evaluator registry has an explicit lifecycle and audit trail, model identifiers are pinned rather than floating aliases, and provider selection (including fallback) is constrained by tenant-declared compliance attributes.
+Accepted. The evaluator registry has an explicit lifecycle and audit trail, model identifiers are pinned rather than floating aliases, and provider selection (including fallback) is constrained by tenant-declared compliance attributes.
 
 ### ADR-015 - Deferred multi-judge reconciliation
-Proposed. Multi-judge ensembles stay out of MVP scope, but provenance and finding shapes are provisioned in v0.1 so that adding them later is additive rather than a breaking change.
+Accepted. Multi-judge ensembles stay out of MVP scope, but provenance and finding shapes are provisioned in v0.1 so that adding them later is additive rather than a breaking change.
 
 See [ANY_JUDGE_ARCHITECTURE_REVIEW.md](ANY_JUDGE_ARCHITECTURE_REVIEW.md) for the analysis behind ADR-010 through ADR-015.
 
