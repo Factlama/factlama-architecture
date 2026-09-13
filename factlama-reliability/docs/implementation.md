@@ -6,13 +6,15 @@ Status values: `NOT_STARTED`, `IN_PROGRESS`, `BLOCKED`, `COMPLETE`.
 
 A task is COMPLETE only when code, tests, failure handling, tenant isolation, observability, documentation, and acceptance criteria are satisfied.
 
-## REL-01 Foundation — STATUS: NOT_STARTED
-- [ ] Create source module boundaries matching architecture.
-- [ ] Add configuration model, logging, health, lint/type/test foundations.
-- [ ] Add schema/API version conventions.
-- [ ] Add dependency rules preventing core -> provider SDK coupling.
+## REL-01 Foundation — STATUS: IN_PROGRESS
+- [x] Create source module boundaries matching architecture. `judges/providers.py` (mixed vendor-free + vendor-coupled code) is split into `judges/port.py` (the vendor-neutral `JudgeProvider` abstraction), `judges/providers.py` (`MockModelProvider`/`RuleBasedProvider`, no vendor SDK) and `judges/vendor_adapters.py` (`EmbeddingProvider`/`NLIProvider`, sentence-transformers/transformers/torch) -- the split is what makes the dependency rule below actually enforceable, not just true by lazy-import convention.
+- [x] Add logging conventions (`core/logging_config.py`, tested).
+- [ ] Add a configuration model and health/readiness endpoints. Deliberately deferred: no service exists yet to configure or serve health from -- REL-12 (API) is where these get a real home, not a placeholder module with nothing to configure.
+- [x] Add lint/type/test foundations: `ruff check`/`ruff format` (full ruleset, zero violations), `mypy --strict`-adjacent config with the pydantic plugin (zero errors, no blanket `# type: ignore`), `pytest` (151 passed, 1 skipped), wired into `.github/workflows/ci.yml` across Python 3.10-3.12. Verified against a genuinely fresh checkout + fresh venv (Python 3.11), not just the working `.venv`.
+- [x] Add schema/API version conventions. Pre-existing: `schema_version="0.1"` with `validate_schema_version()` rejecting unsupported versions; now also lint/type-checked.
+- [x] Add dependency rules preventing core -> provider SDK coupling. `import-linter` contracts in `pyproject.toml` (`[tool.importlinter]`), run in CI: `schemas` cannot import `core`/`judges`; `schemas`/`core` cannot import `sentence_transformers`/`transformers`/`torch`/`openai`/`anthropic` even transitively (this is what forced the `judges/` split above -- the old single-module layout could not pass this contract).
 
-**Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable.
+**Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable. Met for this repo alone. Not marked COMPLETE: the configuration-model/health item is genuinely unstarted (deferred, not forgotten), and G1 (the cross-repo gate this task belongs to) also requires OBS-01, which has not started -- `factlama-observability` has no code yet, only documentation.
 
 ## REL-02 Tenant and security context — STATUS: NOT_STARTED
 - [ ] Tenant/project/application context model.

@@ -8,14 +8,14 @@ Claude must update task status only after acceptance criteria and tests pass.
 
 ## Phase A — Foundation
 
-### EPIC-01 Repository and engineering foundation — STATUS: NOT_STARTED
-- [ ] Establish source/test/example layouts in implementation repos.
-- [ ] Add configuration conventions.
-- [ ] Add lint/type/test/CI foundations.
-- [ ] Add API/schema versioning conventions.
-- [ ] Add dependency boundary rules.
+### EPIC-01 Repository and engineering foundation — STATUS: IN_PROGRESS
+- [ ] Establish source/test/example layouts in implementation repos. Done for `factlama-reliability` (see REL-01); `factlama-observability` has no code yet, only documentation -- OBS-01 has not started.
+- [ ] Add configuration conventions. Deferred in `factlama-reliability` until REL-12's API exists to configure; not started in `factlama-observability`.
+- [x] Add lint/type/test/CI foundations. Done for `factlama-reliability`: ruff (lint+format), mypy, pytest, `.github/workflows/ci.yml` across Python 3.10-3.12, verified against a fresh checkout/venv. Not started in `factlama-observability`.
+- [x] Add API/schema versioning conventions. Pre-existing in `factlama-reliability` (`schema_version="0.1"`); the [`contracts/v0.1/`](../contracts/README.md) JSON Schemas additionally make the versioning rule (reject unknown major, accept unknown minor) machine-checked, shared by both repos once OBS-01 starts.
+- [x] Add dependency boundary rules. Done for `factlama-reliability`: `import-linter` contracts (`schemas` has no internal dependencies; `schemas`/`core` cannot reach a vendor model SDK, even transitively), enforced in CI. Not started in `factlama-observability`.
 
-**Exit:** clean checkout builds/tests and architecture boundaries are documented/enforced.
+**Exit:** clean checkout builds/tests and architecture boundaries are documented/enforced. Met for `factlama-reliability` alone (see REL-01's acceptance note); this epic stays `IN_PROGRESS` until `factlama-observability`'s OBS-01 closes the same gaps on its side.
 
 ### EPIC-02 Tenancy and security foundation — STATUS: NOT_STARTED
 - [ ] Tenant/project/application identity model.
