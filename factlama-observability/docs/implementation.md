@@ -6,16 +6,17 @@ Status values: `NOT_STARTED`, `IN_PROGRESS`, `BLOCKED`, `COMPLETE`.
 
 A task is COMPLETE only when code, tests, failure handling, tenant isolation, telemetry, documentation, and acceptance criteria are satisfied.
 
-## OBS-01 Foundation — STATUS: IN_PROGRESS
+## OBS-01 Foundation — STATUS: COMPLETE
 - [x] Establish source/test/example layouts. `sdk/`, `collector/{ingress,processing}/`, `storage/`, `query/`, `operations/` Python packages plus a `dashboard/` Vite+React+TypeScript scaffold and an `examples/` placeholder (real examples wait on OBS-13/OBS-07).
 - [x] Add configuration, health, logging, lint/type/test foundations. `operations/{config,health,logging_config}.py` (22 tests, 100% coverage); dashboard has `npm run lint/typecheck/test/build`, all passing with 0 audited vulnerabilities.
 - [x] Define API/event/schema versioning. `operations/versioning.py`'s `check_schema_version()` enforces the same major-reject/minor-accept rule the [`contracts/v0.1/`](../../contracts/README.md) schemas already enforce for Reliability; nothing in this repository emits or accepts a real payload yet, so no wire type uses it beyond its own tests.
 - [x] Define module dependency boundaries. `import-linter` (3 forbidden contracts, all `KEPT`): `sdk` cannot depend on `collector`/`storage`/`query`; `storage` cannot depend on `collector`/`query`/`sdk`; `query` cannot depend on `collector`/`sdk`.
-Storage migrations exist only as Alembic wiring (`storage/migrations/`, zero revisions, verified as a no-op against SQLite) -- that is this task's full scope; the actual `spans`/`reliability_events`/`evaluation_links` schema is OBS-06, not re-scoped here.
 
-- [ ] `.github/workflows/ci.yml` is authored (Python 3.10-3.12 matrix: ruff/mypy/import-linter/pytest/alembic smoke test; Node 24: eslint/tsc/vitest/build) but not yet verified green on GitHub Actions itself -- every check above was reproduced locally (fresh `.venv`, fresh `npm install`), not through an actual CI run.
+Storage migrations exist only as Alembic wiring (`storage/migrations/`, zero revisions, verified as a no-op against SQLite) -- that is this task's full scope; the actual `spans`/`reliability_events`/`evaluation_links` schema is OBS-06, not re-scoped here. `operations/config.py`'s env helpers have no caller yet (first real one is OBS-04/OBS-07) -- foundation only, by design, not a configured service.
 
-**Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable. Every acceptance item is met locally. Not marked COMPLETE solely because the CI workflow itself has not yet run on GitHub Actions -- it is authored and its steps individually reproduced, but "clean checkout builds/tests" should be confirmed by the actual pipeline, not just by this local reproduction, before this is COMPLETE.
+`.github/workflows/ci.yml` (Python 3.10-3.12 matrix: ruff/mypy/import-linter/pytest/alembic smoke test; Node 24: eslint/tsc/vitest/build) ran green on GitHub Actions from a clean checkout on first push (run [34756423331](https://github.com/Factlama/factlama-observability/actions/runs/34756423331), all 4 jobs passed).
+
+**Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable. Confirmed by an actual GitHub Actions run against a clean checkout, not merely reproduced locally. Marked COMPLETE for OBS-01's own scope; this does not make OBS-02 and later any less `NOT_STARTED`.
 
 ## OBS-02 Tenant-aware ingestion — STATUS: NOT_STARTED
 - [ ] Tenant/project/application context.

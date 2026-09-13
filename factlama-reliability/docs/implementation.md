@@ -14,7 +14,7 @@ A task is COMPLETE only when code, tests, failure handling, tenant isolation, ob
 - [x] Add schema/API version conventions. Pre-existing: `schema_version="0.1"` with `validate_schema_version()` rejecting unsupported versions; now also lint/type-checked.
 - [x] Add dependency rules preventing core -> provider SDK coupling. `import-linter` contracts in `pyproject.toml` (`[tool.importlinter]`), run in CI: `schemas` cannot import `core`/`judges`; `schemas`/`core` cannot import `sentence_transformers`/`transformers`/`torch`/`openai`/`anthropic` even transitively (this is what forced the `judges/` split above -- the old single-module layout could not pass this contract).
 
-**Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable. Met for this repo alone. Not marked COMPLETE: the configuration-model/health item is genuinely unstarted (deferred, not forgotten), and G1 (the cross-repo gate this task belongs to) also requires OBS-01, which has not started -- `factlama-observability` has no code yet, only documentation.
+**Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable. Met for this repo alone. Not marked COMPLETE: the configuration-model/health item is genuinely unstarted (deferred, not forgotten, to REL-12). `factlama-observability`'s OBS-01 is now `COMPLETE`, so it no longer blocks G1 on this task's behalf -- REL-01 stays `IN_PROGRESS` solely on its own remaining item.
 
 ## REL-02 Tenant and security context — STATUS: NOT_STARTED
 - [ ] Tenant/project/application context model.
