@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://factlama.dev/contracts/v0.1/verification_result.schema.json",
+  "title": "VerificationResult v0.1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "request_id",
+    "tenant_id",
+    "project_id",
+    "application_id",
+    "created_at",
+    "status",
+    "verdict",
+    "claims",
+    "scores",
+    "violations",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
+    "evaluation_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "request_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "tenant_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "project_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "application_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "interaction_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "trace_id": { "type": "string" },
+    "span_id": { "type": "string" },
+    "created_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "status": { "$ref": "common.schema.json#/$defs/ResultStatus" },
+    "abstention_reason": { "$ref": "common.schema.json#/$defs/AbstentionReason" },
+    "dispute_reason": { "$ref": "common.schema.json#/$defs/DisputeReason" },
+    "verdict": { "$ref": "common.schema.json#/$defs/OverallVerdict" },
+    "scores": {
+      "type": "object",
+      "additionalProperties": { "$ref": "common.schema.json#/$defs/ScoreValue" }
+    },
+    "claims": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/ClaimResult" } },
+    "violations": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Violation" } },
+    "policy_action": { "type": ["string", "null"] },
+    "policy_version": { "type": ["string", "null"] },
+    "provenance": { "$ref": "common.schema.json#/$defs/Provenance" },
+    "usage_summary": { "$ref": "common.schema.json#/$defs/Usage" },
+    "supersedes": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "metadata": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "enum": ["FAILED", "ABSTAINED"] } } },
+      "then": {
+        "properties": { "verdict": { "const": "ABSTAIN" } },
+        "required": ["abstention_reason"]
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "DISPUTED" } } },
+      "then": {
+        "properties": { "verdict": { "const": "DISPUTED" } },
+        "required": ["dispute_reason"]
+      }
+    }
+  ]
+}

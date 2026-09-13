@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1",
+  "event_id": "evt-2",
+  "tenant_id": "t-acme",
+  "evaluation_id": "eval-4",
+  "project_id": "p-demo",
+  "application_id": "a-rag",
+  "occurred_at": "2026-09-13T00:15:01Z",
+  "status": "ABSTAINED",
+  "verdict": "ABSTAIN",
+  "scores": {
+    "groundedness": { "status": "UNAVAILABLE" }
+  },
+  "evaluator_version": "0.1",
+  "calibration_class": "class-2",
+  "qualification_status": "UNQUALIFIED",
+  "usage_summary": { "cost": { "status": "UNAVAILABLE" } }
+}

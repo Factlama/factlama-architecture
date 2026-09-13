@@ -1,0 +1,3 @@
+{
+  "error": { "code": "INVALID_RESPONSE", "message": "SUPPORTED verdict cites no evidence ID, or an evidence ID absent from the request" }
+}

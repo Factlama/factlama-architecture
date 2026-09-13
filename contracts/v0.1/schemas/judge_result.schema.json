@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://factlama.dev/contracts/v0.1/judge_result.schema.json",
+  "title": "JudgeResult v0.1",
+  "description": "Exactly one of verdict or error, never both, never neither.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "verdict": { "$ref": "common.schema.json#/$defs/ClaimVerdict" },
+    "evidence_ids": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/OpaqueId" } },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "rationale_code": { "$ref": "common.schema.json#/$defs/RationaleCode" },
+    "usage": { "$ref": "common.schema.json#/$defs/Usage" },
+    "error": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["code", "message"],
+      "properties": {
+        "code": { "$ref": "common.schema.json#/$defs/JudgeErrorCode" },
+        "message": { "type": "string" }
+      }
+    }
+  },
+  "oneOf": [
+    { "required": ["verdict"], "not": { "required": ["error"] } },
+    { "required": ["error"], "not": { "required": ["verdict"] } }
+  ],
+  "if": { "required": ["verdict"], "properties": { "verdict": { "const": "SUPPORTED" } } },
+  "then": { "properties": { "evidence_ids": { "type": "array", "minItems": 1 } }, "required": ["evidence_ids"] }
+}

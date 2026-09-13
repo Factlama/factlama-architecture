@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://factlama.dev/contracts/v0.1/reliability_event.schema.json",
+  "title": "ReliabilityEvent v0.1",
+  "description": "Metadata-only projection delivered from Reliability's outbox to Observability's ingress. Never carries prompt/response/evidence bodies or secrets.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "event_id",
+    "tenant_id",
+    "evaluation_id",
+    "occurred_at",
+    "status",
+    "verdict",
+    "scores",
+    "evaluator_version",
+    "calibration_class",
+    "qualification_status",
+    "usage_summary"
+  ],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
+    "event_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "tenant_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "evaluation_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "project_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "application_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "interaction_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "trace_id": { "type": "string" },
+    "span_id": { "type": "string" },
+    "occurred_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "status": { "$ref": "common.schema.json#/$defs/ResultStatus" },
+    "verdict": { "$ref": "common.schema.json#/$defs/OverallVerdict" },
+    "scores": {
+      "type": "object",
+      "additionalProperties": { "$ref": "common.schema.json#/$defs/ScoreValue" }
+    },
+    "evaluator_version": { "type": "string" },
+    "calibration_class": { "type": "string" },
+    "calibration_classes": {
+      "type": "array",
+      "description": "Present when status/verdict is DISPUTED or otherwise spans more than one calibration class; calibration_class is MIXED in that case.",
+      "items": { "type": "string" }
+    },
+    "qualification_status": { "$ref": "common.schema.json#/$defs/QualificationStatusOrMixed" },
+    "usage_summary": { "$ref": "common.schema.json#/$defs/Usage" }
+  },
+  "if": {
+    "properties": { "calibration_class": { "const": "MIXED" } }
+  },
+  "then": {
+    "required": ["calibration_classes"],
+    "properties": { "calibration_classes": { "type": "array", "minItems": 2 } }
+  }
+}

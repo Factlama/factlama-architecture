@@ -1,0 +1,5 @@
+{
+  "verdict": "SUPPORTED",
+  "evidence_ids": ["doc-1"],
+  "error": { "code": "TIMEOUT", "message": "deadline exceeded before dispatch" }
+}

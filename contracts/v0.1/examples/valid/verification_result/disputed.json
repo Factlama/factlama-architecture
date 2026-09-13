@@ -1,0 +1,66 @@
+{
+  "schema_version": "0.1",
+  "evaluation_id": "eval-6",
+  "request_id": "req-6",
+  "tenant_id": "t-acme",
+  "project_id": "p-demo",
+  "application_id": "a-rag",
+  "created_at": "2026-09-13T00:25:00Z",
+  "status": "DISPUTED",
+  "dispute_reason": "JUDGE_DISAGREEMENT",
+  "verdict": "DISPUTED",
+  "claims": [
+    {
+      "claim_id": "c1",
+      "text": "The trial reduced errors by 30 percent",
+      "text_status": "AVAILABLE",
+      "verdict": "DISPUTED",
+      "evidence_ids": ["doc-1"],
+      "rationale_code": "JUDGE_DISAGREEMENT",
+      "contributing_judgments": [
+        { "attempt_id": "attempt-1", "verdict": "SUPPORTED", "evidence_ids": ["doc-1"], "rationale_code": "DIRECT_SUPPORT" },
+        { "attempt_id": "attempt-2", "verdict": "UNSUPPORTED", "evidence_ids": [], "rationale_code": "NO_SUPPORT" }
+      ]
+    }
+  ],
+  "scores": {
+    "groundedness": { "status": "UNAVAILABLE", "calibration_class": "MIXED" }
+  },
+  "violations": [
+    { "code": "JUDGE_DISAGREEMENT", "severity": "HIGH", "claim_ids": ["c1"], "evidence_ids": ["doc-1"], "message": "attempt-1 and attempt-2 disagree on claim c1" }
+  ],
+  "provenance": {
+    "evaluator_id": "groundedness",
+    "evaluator_version": "0.1",
+    "policy_version": null,
+    "mode": "DEEP",
+    "routing_profile_version": "deep-0.1",
+    "started_at": "2026-09-13T00:25:00Z",
+    "completed_at": "2026-09-13T00:25:02Z",
+    "attempts": [
+      {
+        "attempt_id": "attempt-1",
+        "provider_id": "judge-a",
+        "configuration_version": "0.1",
+        "qualification_status": "QUALIFIED",
+        "calibration_class": "class-a",
+        "outcome": "COMPLETED",
+        "started_at": "2026-09-13T00:25:00Z",
+        "completed_at": "2026-09-13T00:25:01Z",
+        "usage": { "cost": { "status": "UNAVAILABLE" } }
+      },
+      {
+        "attempt_id": "attempt-2",
+        "provider_id": "judge-b",
+        "configuration_version": "0.1",
+        "qualification_status": "QUALIFIED",
+        "calibration_class": "class-b",
+        "outcome": "COMPLETED",
+        "started_at": "2026-09-13T00:25:01Z",
+        "completed_at": "2026-09-13T00:25:02Z",
+        "usage": { "cost": { "status": "UNAVAILABLE" } }
+      }
+    ]
+  },
+  "usage_summary": { "cost": { "status": "UNAVAILABLE" } }
+}

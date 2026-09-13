@@ -1,0 +1,7 @@
+{
+  "verdict": "SUPPORTED",
+  "evidence_ids": ["doc-1"],
+  "confidence": 0.92,
+  "rationale_code": "DIRECT_SUPPORT",
+  "usage": { "input_tokens": 96, "output_tokens": 20, "total_tokens": 116, "cost": { "status": "UNAVAILABLE" }, "latency_ms": 120 }
+}

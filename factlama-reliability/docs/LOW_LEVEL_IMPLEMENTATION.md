@@ -59,7 +59,7 @@ Implement exactly the target routes in [API.md](API.md). `POST /v0.1/verificatio
 
 | Inspect/run | Expected observation |
 |---|---|
-| Submit worked request | Two claims, one supported and one unsupported, `PARTIAL`, groundedness 0.5, cited evidence ID and provenance |
+| Submit worked request | Two claims, one supported and one unsupported, `PARTIAL`, groundedness 0.5, cited evidence ID, and two judge attempts in provenance (one per claim, per `contracts/v0.1/examples/valid/verification_result/partial.json`) |
 | Submit contradiction fixture | Claim `CONTRADICTED`, overall `FAIL`, contradiction risk measured |
 | Submit empty/ambiguous corpus | `INSUFFICIENT_EVIDENCE` and `ABSTAIN`, not PASS/FAIL |
 | Force provider timeout/malformed JSON | `ABSTAINED/ABSTAIN` or typed operational error; no `UNSUPPORTED` fabricated |

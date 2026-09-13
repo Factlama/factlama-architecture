@@ -1,0 +1,7 @@
+{
+  "claim": { "claim_id": "c1", "text": "Acme was founded in 2018" },
+  "evidence": [
+    { "evidence_id": "doc-1", "content": "Acme was founded in 2018." }
+  ],
+  "configuration_version": "0.1"
+}

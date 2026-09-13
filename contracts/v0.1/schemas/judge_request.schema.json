@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://factlama.dev/contracts/v0.1/judge_request.schema.json",
+  "title": "JudgeRequest v0.1",
+  "description": "The bounded JudgeProvider.evaluate() input: exactly one claim, never a batch.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["claim", "evidence", "configuration_version"],
+  "properties": {
+    "claim": { "$ref": "common.schema.json#/$defs/Claim" },
+    "evidence": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Evidence" } },
+    "configuration_version": { "type": "string" }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "event_id": "evt-1",
+  "tenant_id": "t-acme",
+  "evaluation_id": "eval-1",
+  "project_id": "p-demo",
+  "application_id": "a-rag",
+  "interaction_id": "int-1",
+  "trace_id": "0123456789abcdef0123456789abcdef",
+  "occurred_at": "2026-09-13T00:00:01Z",
+  "status": "COMPLETED",
+  "verdict": "PARTIAL",
+  "scores": {
+    "groundedness": { "value": 0.5, "status": "MEASURED", "method_version": "groundedness-0.1", "calibration_class": "class-1" }
+  },
+  "evaluator_version": "0.1",
+  "calibration_class": "class-1",
+  "qualification_status": "QUALIFIED",
+  "usage_summary": { "input_tokens": 180, "output_tokens": 42, "total_tokens": 222, "cost": { "status": "UNAVAILABLE" } }
+}

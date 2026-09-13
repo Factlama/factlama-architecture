@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1",
+  "evaluation_id": "eval-3",
+  "request_id": "req-3",
+  "tenant_id": "t-acme",
+  "project_id": "p-demo",
+  "application_id": "a-rag",
+  "created_at": "2026-09-13T00:10:00Z",
+  "status": "ABSTAINED",
+  "abstention_reason": "NO_CHECKABLE_CLAIMS",
+  "verdict": "ABSTAIN",
+  "claims": [],
+  "scores": {
+    "groundedness": { "status": "NOT_APPLICABLE", "method_version": "groundedness-0.1", "calibration_class": "NONE" },
+    "hallucination_risk": { "status": "NOT_APPLICABLE", "method_version": "hallucination-risk-0.1", "calibration_class": "NONE" },
+    "contradiction_risk": { "status": "NOT_APPLICABLE", "method_version": "contradiction-risk-0.1", "calibration_class": "NONE" }
+  },
+  "violations": [],
+  "provenance": {
+    "evaluator_id": "groundedness",
+    "evaluator_version": "0.1",
+    "policy_version": null,
+    "mode": "STANDARD",
+    "routing_profile_version": "standard-0.1",
+    "started_at": "2026-09-13T00:10:00Z",
+    "completed_at": "2026-09-13T00:10:00Z",
+    "attempts": []
+  },
+  "usage_summary": { "cost": { "status": "UNAVAILABLE" } }
+}

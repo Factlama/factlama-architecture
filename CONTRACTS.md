@@ -12,7 +12,11 @@ Required: `schema_version`, `request_id`, `project_id`, `application_id`, `answe
 
 ## VerificationResult
 
-Required: `schema_version`, `evaluation_id`, `request_id`, `tenant_id`, `project_id`, `application_id`, `created_at`, `status` (`COMPLETED|ABSTAINED|FAILED|DISPUTED`), `verdict` (`PASS|PARTIAL|FAIL|ABSTAIN|DISPUTED`), `claims`, `scores`, `violations`, and `provenance`. An abstained result requires `abstention_reason` (`NO_CHECKABLE_CLAIMS|INSUFFICIENT_EVIDENCE|PROVIDER_FAILURE|BUDGET_EXHAUSTED|NO_COMPLIANT_PROVIDER|REVOKED|CANCELLED`); a disputed result requires `dispute_reason=JUDGE_DISAGREEMENT`. Optional correlation IDs echo the request. Each claim requires `claim_id`, `verdict` (`SUPPORTED|CONTRADICTED|UNSUPPORTED|INSUFFICIENT_EVIDENCE|NOT_APPLICABLE|DISPUTED`), `evidence_ids`, `rationale_code`, `text_status` (`AVAILABLE|REDACTED|NOT_STORED`), and `contributing_judgments` (an array, empty when no valid judgment was returned, including provider failure). A contributing judgment identifies `attempt_id`, claim verdict, cited evidence IDs and rationale code; it does not replace the final claim verdict. `text` is present only when authorized and available. The immediate response may contain claim text even when persistence is metadata-only; later reads return `text_status=NOT_STORED` and omit `text`. Free-text rationale is optional and content-governed. Evidence IDs must resolve to request evidence; an empty link set is legitimate except for `SUPPORTED`, which requires at least one cited evidence ID. `scores` is a map of named dimensions to `{value?, status, method_version, calibration_class}` where status is `MEASURED|NOT_APPLICABLE|UNAVAILABLE`; `value` is a finite number in [0,1] only for `MEASURED`. A violation requires a stable code, severity, affected claim IDs, and evidence IDs. Reserved codes include `JUDGE_DISAGREEMENT` and `EVIDENCE_INJECTION_SUSPECTED`. A result records `policy_decision` separately from factual verdict. `provenance` includes evaluator ID/version, policy version if applied, started/completed timestamps, evaluation mode/routing-profile version, and nonempty `attempts[]` when a judge was called. Each attempt records `attempt_id`, provider/model/pinned model version, configuration version, qualification status, calibration class, outcome/error, timing and usage. It never includes credentials.
+Required: `schema_version`, `evaluation_id`, `request_id`, `tenant_id`, `project_id`, `application_id`, `created_at`, `status` (`COMPLETED|ABSTAINED|FAILED|DISPUTED`), `verdict` (`PASS|PARTIAL|FAIL|ABSTAIN|DISPUTED`), `claims`, `scores`, `violations`, and `provenance`. An abstained result requires `abstention_reason` (`NO_CHECKABLE_CLAIMS|INSUFFICIENT_EVIDENCE|PROVIDER_FAILURE|BUDGET_EXHAUSTED|NO_COMPLIANT_PROVIDER|REVOKED|CANCELLED`); a disputed result requires `dispute_reason=JUDGE_DISAGREEMENT`. Optional correlation IDs echo the request. Each claim requires `claim_id`, `verdict` (`SUPPORTED|CONTRADICTED|UNSUPPORTED|INSUFFICIENT_EVIDENCE|NOT_APPLICABLE|DISPUTED`), `evidence_ids` (a plain array of cited evidence IDs -- never evidence-reference objects with support/relevance scores; that scoring is an internal judge-adapter concern, not a public field), `rationale_code`, `text_status` (`AVAILABLE|REDACTED|NOT_STORED`), and `contributing_judgments` (an array, empty when no valid judgment was returned, including provider failure). A contributing judgment identifies `attempt_id`, claim verdict, cited evidence IDs (`evidence_ids`, same plain-array shape) and rationale code; it does not replace the final claim verdict. `text` is present only when authorized and available. The immediate response may contain claim text even when persistence is metadata-only; later reads return `text_status=NOT_STORED` and omit `text`. Free-text rationale is optional and content-governed. Evidence IDs must resolve to request evidence; an empty link set is legitimate except for `SUPPORTED`, which requires at least one cited evidence ID. `scores` is a map of named dimensions to `{value?, status, method_version, calibration_class}` where status is `MEASURED|NOT_APPLICABLE|UNAVAILABLE`; `value` is a finite number in [0,1] only for `MEASURED`. A violation requires a stable `code`, `severity` (`INFO|LOW|MEDIUM|HIGH|CRITICAL`), affected `claim_ids` and `evidence_ids` (plain arrays, possibly empty; a violation may affect more than one claim or cite no evidence at all). `message` is optional free text, content-governed like claim rationale -- a violation's identity is its code plus affected IDs, not its message. Reserved codes include `JUDGE_DISAGREEMENT` and `EVIDENCE_INJECTION_SUSPECTED`. A result records `policy_decision` separately from factual verdict. `provenance` includes evaluator ID/version, policy version if applied, started/completed timestamps, evaluation mode/routing-profile version, and nonempty `attempts[]` when a judge was called. Each attempt records `attempt_id`, provider/model/pinned model version, configuration version, qualification status, calibration class, outcome/error, timing and usage. It never includes credentials.
+
+`rationale_code` is a short, stable, versioned tag -- not free text -- explaining a claim verdict or contributing judgment. The v0.1 vocabulary: `DIRECT_SUPPORT` (evidence states the claim), `PARAPHRASED_SUPPORT` (evidence supports the claim in different words), `CONTRADICTION_DETECTED` (evidence states the opposite), `NUMERICAL_CONTRADICTION` (a number in the claim conflicts with a number in otherwise-matching evidence), `NO_SUPPORT` (relevant evidence exists but does not support the claim), `NO_EVIDENCE_SUPPLIED` (the request carried no evidence for this claim), `AMBIGUOUS_EVIDENCE` (evidence is relevant but not decisive), `CITATION_UNSUPPORTED` (a cited evidence ID shares no content with the claim under the conservative overlap check; see the `JudgeProvider` port section), `PROVIDER_DISPATCH_FAILED` (the judge call itself failed, not a factual judgment), `NOT_APPLICABLE_CLAIM_TYPE` (the claim is out of scope for factual verification, e.g. an opinion), and `JUDGE_DISAGREEMENT` (used at claim level only for a `DISPUTED` verdict). This list is additive; a new code requires a version note here, not silent invention by an adapter.
+
+**One judge attempt per claim.** `JudgeProvider.evaluate()` (below) takes exactly one claim per call, so a multi-claim answer produces one `Attempt` per claim, never a single attempt spanning multiple claims -- the worked example below reflects this. `contributing_judgments[].attempt_id` always resolves to exactly one entry in `provenance.attempts[]`.
 
 `FAILED` and `ABSTAINED` MUST have `verdict=ABSTAIN`; `DISPUTED` status MUST have `verdict=DISPUTED` and a `JUDGE_DISAGREEMENT` violation. A disagreement between valid attempts is not insufficient evidence or a provider failure. Provider timeout, transport failure, budget exhaustion or absence of a compliant provider is never `UNSUPPORTED` or `FAIL`. Factual verdict is computed independently of policy action. `PASS` requires all applicable factual claims supported. `PARTIAL` covers a mixture of supported and unresolved claims. `FAIL` requires a contradicted claim. Empty/wholly unevaluable claims produce `ABSTAINED/ABSTAIN`. A disputed claim prevents an aggregate PASS/FAIL until an explicit, versioned reconciliation policy exists; MVP does not perform majority voting. The exact aggregate and score rules are versioned in Reliability's scoring specification.
 
@@ -86,7 +90,7 @@ The authenticated tenant is `t-acme`; it is intentionally absent from the client
       "rationale_code": "NO_SUPPORT",
       "contributing_judgments": [
         {
-          "attempt_id": "attempt-1",
+          "attempt_id": "attempt-2",
           "verdict": "UNSUPPORTED",
           "evidence_ids": [],
           "rationale_code": "NO_SUPPORT"
@@ -133,13 +137,34 @@ The authenticated tenant is `t-acme`; it is intentionally absent from the client
         "started_at": "2026-09-13T00:00:00Z",
         "completed_at": "2026-09-13T00:00:00Z",
         "usage": {
-          "input_tokens": 180,
-          "output_tokens": 42,
-          "total_tokens": 222,
+          "input_tokens": 96,
+          "output_tokens": 20,
+          "total_tokens": 116,
           "cost": {
             "status": "UNAVAILABLE"
           },
-          "latency_ms": 240
+          "latency_ms": 120
+        }
+      },
+      {
+        "attempt_id": "attempt-2",
+        "provider_id": "example-judge",
+        "model_id": "example-model",
+        "pinned_model_version": "example-model-1",
+        "configuration_version": "0.1",
+        "qualification_status": "QUALIFIED",
+        "calibration_class": "class-1",
+        "outcome": "COMPLETED",
+        "started_at": "2026-09-13T00:00:00Z",
+        "completed_at": "2026-09-13T00:00:00Z",
+        "usage": {
+          "input_tokens": 84,
+          "output_tokens": 22,
+          "total_tokens": 106,
+          "cost": {
+            "status": "UNAVAILABLE"
+          },
+          "latency_ms": 118
         }
       }
     ]
@@ -155,4 +180,6 @@ The authenticated tenant is `t-acme`; it is intentionally absent from the client
 }
 ```
 
-This is illustrative fixture data, not a claim of calibrated confidence. The example's 0.5 score follows the MVP equal-weight claim rule in Reliability's scoring document.
+This is illustrative fixture data, not a claim of calibrated confidence. The example's 0.5 score follows the MVP equal-weight claim rule in Reliability's scoring document. Two claims produce two attempts (`attempt-1`, `attempt-2`), matching the one-claim-per-call `JudgeProvider` port above, not one attempt covering both.
+
+The machine-readable canonical fixtures live in [`contracts/v0.1/`](contracts/v0.1/), covering this and other `VerificationRequest`/`VerificationResult`/`JudgeRequest`/`JudgeResult`/`ReliabilityEvent` cases including abstention, failure and dispute; [`contracts/validate.py`](contracts/validate.py) is the standalone schema/compatibility runner referenced in [EXECUTION_PLAN.md](EXECUTION_PLAN.md)'s G0 exit evidence. This prose is authoritative on meaning; the fixtures are authoritative on exact shape and must stay consistent with it.

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://factlama.dev/contracts/v0.1/verification_request.schema.json",
+  "title": "VerificationRequest v0.1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "request_id", "project_id", "application_id", "answer", "evidence"],
+  "properties": {
+    "schema_version": { "$ref": "common.schema.json#/$defs/SchemaVersion" },
+    "request_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "project_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "application_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "question": { "type": "string" },
+    "answer": { "type": "string", "minLength": 1 },
+    "evidence": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Evidence" } },
+    "instructions": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Instruction" } },
+    "claims": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Claim" } },
+    "citations": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Citation" } },
+    "tool_executions": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/ToolExecution" } },
+    "policy_id": { "type": "string" },
+    "mode": { "$ref": "common.schema.json#/$defs/VerificationMode" },
+    "interaction_id": { "$ref": "common.schema.json#/$defs/OpaqueId" },
+    "trace_id": { "type": "string" },
+    "span_id": { "type": "string" },
+    "model": { "type": "string" },
+    "prompt_version": { "type": "string" },
+    "metadata": { "type": "object" }
+  },
+  "not": {
+    "required": ["tenant_id"]
+  }
+}

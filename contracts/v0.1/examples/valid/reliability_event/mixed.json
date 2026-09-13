@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "event_id": "evt-3",
+  "tenant_id": "t-acme",
+  "evaluation_id": "eval-6",
+  "project_id": "p-demo",
+  "application_id": "a-rag",
+  "occurred_at": "2026-09-13T00:25:02Z",
+  "status": "DISPUTED",
+  "verdict": "DISPUTED",
+  "scores": {
+    "groundedness": { "status": "UNAVAILABLE", "calibration_class": "MIXED" }
+  },
+  "evaluator_version": "0.1",
+  "calibration_class": "MIXED",
+  "calibration_classes": ["class-a", "class-b"],
+  "qualification_status": "MIXED",
+  "usage_summary": { "cost": { "status": "UNAVAILABLE" } }
+}
