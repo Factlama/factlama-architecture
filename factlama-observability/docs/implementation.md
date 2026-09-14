@@ -18,20 +18,24 @@ Storage migrations exist only as Alembic wiring (`storage/migrations/`, zero rev
 
 **Acceptance:** clean checkout builds/tests; module dependency rules are documented and enforceable. Confirmed by an actual GitHub Actions run against a clean checkout, not merely reproduced locally. Marked COMPLETE for OBS-01's own scope; this does not make OBS-02 and later any less `NOT_STARTED`.
 
-## OBS-02 Tenant-aware ingestion — STATUS: NOT_STARTED
-- [ ] Tenant/project/application context.
-- [ ] Validate tenant context at ingress.
-- [ ] Cross-tenant isolation tests.
-- [ ] Bounded payload validation.
-- [ ] Non-blocking/best-effort SDK behavior.
+## OBS-02 Tenant-aware ingestion — STATUS: IN_PROGRESS
+- [x] Tenant/project/application context. `schemas/tenancy.py`'s `TenantContext`, identical model to `factlama-reliability`'s (tenant_id + optional project/application scope, real `authorizes()` check, tested).
+- [ ] Validate tenant context at ingress. No ingress exists yet (OBS-04) to validate at.
+- [ ] Cross-tenant isolation tests. `TenantContext.authorizes()` has real negative tests; a test against a real ingress/data store needs OBS-04/OBS-06 to exist first.
+- [x] Bounded payload validation. `operations/payload_bounds.py`'s `validate_payload_bounds()` (body size, attribute count, attribute value length -- the three limits LOW_LEVEL_IMPLEMENTATION.md names), tested (5 tests). No ingress calls it yet.
+- [ ] Non-blocking/best-effort SDK behavior. This is OBS-13's SDK queue/export behavior, not built here; `sdk/` is still an empty package.
 
-## OBS-03 AI telemetry model — STATUS: NOT_STARTED
-- [ ] Trace/span/event/resource model.
-- [ ] Model/provider/version attributes.
-- [ ] Token/cost/latency/error attributes.
-- [ ] Retrieval/tool-call events.
-- [ ] Reliability correlation attributes.
-- [ ] Prompt/evaluator/policy version references.
+**Acceptance:** tenant context validated at ingress; cross-tenant isolation demonstrated; bounded payloads. Partially met: the two things testable without a live ingress (typed context authorization, payload-bound checking) are done and tested; the rest is a genuine gate dependency on OBS-04.
+
+## OBS-03 AI telemetry model — STATUS: IN_PROGRESS
+- [ ] Trace/span/event/resource model. Not started: `contracts/v0.1` has no executable schema for `AITrace`/span/resource yet, only prose (`CONTRACTS.md`/`telemetry-model.md`). Defining one now without a canonical fixture to validate against risks guessing wrong ahead of OBS-04/05 actually needing it -- deliberately deferred, not overlooked.
+- [ ] Model/provider/version attributes. Part of the undefined trace/span model above.
+- [ ] Token/cost/latency/error attributes. Part of the undefined trace/span model above; `ReliabilityEvent.usage_summary` (below) covers evaluation-side usage only, not AI-request-side.
+- [ ] Retrieval/tool-call events. Part of the undefined trace/span model above.
+- [x] Reliability correlation attributes -- for the event side. `schemas/reliability_event.py`'s `ReliabilityEvent` (contracts/v0.1's exact shape, including the `calibration_class=MIXED` -> `calibration_classes` validator) carries `evaluation_id`/`interaction_id`/`trace_id`/`span_id` for correlation; `tests/test_contract_fixtures.py` runs all 3 canonical fixtures (completed/abstained/disputed) through it, confirmed green in this repo's own CI (sibling `factlama-architecture` checkout, run [34812358199](https://github.com/Factlama/factlama-observability/actions/runs/34812358199)). The trace side of correlation (a span carrying an `evaluation_id` back-reference) waits on the trace/span model above.
+- [x] Prompt/evaluator/policy version references. `ReliabilityEvent.evaluator_version` done; prompt/policy versions live on the (not yet built) trace/span side.
+
+**Acceptance:** typed telemetry model matching CONTRACTS.md, its event side fixture-tested against `contracts/v0.1`. Met for `ReliabilityEvent` only -- the trace/span/resource side has no contract to implement against yet.
 
 ## OBS-04 Collector — STATUS: NOT_STARTED
 - [ ] OTEL-compatible ingestion path.
