@@ -6,6 +6,26 @@ Status values: `NOT_STARTED`, `IN_PROGRESS`, `BLOCKED`, `COMPLETE`.
 
 A task is COMPLETE only when code, tests, failure handling, tenant isolation, telemetry, documentation, and acceptance criteria are satisfied.
 
+## G2 session summary — 2026-09-14 (observability side)
+
+**Implemented:** OBS-02 (tenant-aware ingestion) and OBS-03 (AI telemetry model) taken to `IN_PROGRESS`, both from a zero-code starting point (OBS-01 was this repo's only prior work).
+
+**Architectural decisions:**
+- `schemas/` added as a new pure-data package (`import-linter`-enforced, no internal deps), mirroring Reliability's `schemas/` layout for consistency across repos.
+- `AITrace`/span/resource model deliberately NOT built: `contracts/v0.1` has no executable schema for it yet, only prose in `telemetry-model.md`. Guessing a shape now risks rework once OBS-04/05 need it for real — only `ReliabilityEvent` (which has a canonical schema) was implemented.
+- `ReliabilityEvent` matches `contracts/v0.1` exactly, including the `calibration_class=MIXED` → `calibration_classes` validator.
+
+**Files changed:** `schemas/{__init__,tenancy,reliability_event}.py` (all new), `operations/payload_bounds.py` (new), `tests/{test_tenancy,test_payload_bounds,test_contract_fixtures}.py` (all new), `pyproject.toml`, `.github/workflows/ci.yml`, `README.md`. Commit `4d6b8b9` on `main`.
+
+**Outstanding issues:**
+- OBS-02: ingress validation, cross-tenant isolation tests, and SDK best-effort behavior all block on OBS-04 (collector) not existing yet.
+- OBS-03: trace/span/event/resource model, model/provider/version attributes, token/cost/latency/error attributes, and retrieval/tool-call events are all blocked on a canonical schema not existing yet — not overlooked, deliberately deferred.
+- OBS-04 through OBS-16: `NOT_STARTED`, unchanged this session.
+
+**Tests/status:** CI green on `main` on first push — run [34812358199](https://github.com/Factlama/factlama-observability/actions/runs/34812358199), all 4 jobs (Python 3.10/3.11/3.12 + dashboard).
+
+**Next recommended steps:** OBS-04 (collector) is the unblocking gate for the rest of OBS-02's acceptance criteria and gives the trace/span model in OBS-03 a real reason to be defined against a live ingestion path. Coordinate with Reliability's G3 API work — a real trace/span schema likely needs to be settled in `contracts/v0.1` (architecture repo) before either repo builds against it.
+
 ## OBS-01 Foundation — STATUS: COMPLETE
 - [x] Establish source/test/example layouts. `sdk/`, `collector/{ingress,processing}/`, `storage/`, `query/`, `operations/` Python packages plus a `dashboard/` Vite+React+TypeScript scaffold and an `examples/` placeholder (real examples wait on OBS-13/OBS-07).
 - [x] Add configuration, health, logging, lint/type/test foundations. `operations/{config,health,logging_config}.py` (22 tests, 100% coverage); dashboard has `npm run lint/typecheck/test/build`, all passing with 0 audited vulnerabilities.
