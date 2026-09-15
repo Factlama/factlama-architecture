@@ -245,7 +245,7 @@ The same logical evaluation must work synchronously and asynchronously, respect 
 
 For each task:
 
-1. read this README and the relevant `factlama-architecture` sections;
+1. read the relevant task, component, and `factlama-architecture` sections selected by the implementation repository entrypoint;
 2. inspect existing code before proposing new abstractions;
 3. set the task status to `IN_PROGRESS`;
 4. implement the smallest complete vertical slice;
