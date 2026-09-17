@@ -1,5 +1,7 @@
 # FactLama Architecture
 
+For a human-oriented introduction to the product, the problem it solves, how it works, and its value to enterprises, read [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md).
+
 Start with [EXECUTION_PLAN.md](EXECUTION_PLAN.md) for build order and exit tests, then [IMPLEMENTATION_MAP.md](IMPLEMENTATION_MAP.md) for component ownership. Component documentation is centralized in [factlama-reliability](factlama-reliability/README.md) and [factlama-observability](factlama-observability/README.md), including each component's `docs/implementation.md` task ledger. [CONTRACTS.md](CONTRACTS.md) owns the shared wire contract in prose; [`contracts/v0.1/`](contracts/README.md) is its executable counterpart -- JSON Schemas, canonical examples and a standalone validator. [DECISION_REGISTER.md](DECISION_REGISTER.md) indexes ADRs and status sources. [SECURITY_MODEL.md](SECURITY_MODEL.md), [OPERATIONS.md](OPERATIONS.md), [INTERACTION_STORE.md](INTERACTION_STORE.md) and [VALIDATION.md](VALIDATION.md) define cross-cutting requirements.
 
 FactLama is an open-source AI reliability and observability platform for LLM, RAG, and agentic applications.
