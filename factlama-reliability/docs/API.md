@@ -1,6 +1,6 @@
 # Reliability HTTP API v0.1 (target)
 
-All routes are under `/v0.1`. Authentication establishes tenant scope; a project/application in the body is checked against it. JSON content type and `schema_version: "0.1"` are required. Error shape and [worked body](https://github.com/Factlama/factlama-architecture/blob/main/CONTRACTS.md) are the shared specification. These routes are design targets, not implemented endpoints.
+All routes are under `/v0.1`. Authentication establishes tenant scope; a project/application in the body is checked against it. JSON content type and `schema_version: "0.1"` are required. Error shape and [worked body](https://github.com/Factlama/factlama-architecture/blob/main/CONTRACTS.md) are the shared specification. `POST /v0.1/verifications` and `GET /health/live`/`GET /health/ready` are implemented (`factlama-reliability/api/`, REL-12). The async routes below remain design targets, not implemented endpoints -- they need G5's durable persistence for their idempotency/outbox mechanics, which does not exist yet.
 
 | Method/path | Behavior |
 |---|---|

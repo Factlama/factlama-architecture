@@ -8,27 +8,27 @@ Claude must update task status only after acceptance criteria and tests pass.
 
 ## Phase A — Foundation
 
-### EPIC-01 Repository and engineering foundation — STATUS: IN_PROGRESS
+### EPIC-01 Repository and engineering foundation — STATUS: COMPLETE
 - [x] Establish source/test/example layouts in implementation repos. `factlama-reliability` done (see REL-01). `factlama-observability`: `sdk/`, `collector/{ingress,processing}/`, `storage/`, `query/`, `operations/` Python packages, a `dashboard/` Vite+React+TypeScript scaffold, `tests/`, `examples/` placeholder -- see OBS-01 (`COMPLETE`).
-- [ ] Add configuration conventions. Deferred in `factlama-reliability` until REL-12's API exists to configure -- a real configuration model/health endpoints, not env-var helpers, and there is no service yet to configure. `factlama-observability`'s `operations/config.py` foundation (env-var resolution helpers) is done for OBS-01's own scope, but this EPIC-01 item names the same unstarted `factlama-reliability` gap, so it stays unchecked here.
+- [x] Add configuration conventions. `factlama-reliability`'s REL-12 API gave this a real home: `api/settings.py`'s env-driven `Settings` plus `GET /health/live`/`GET /health/ready` (REL-01, now `COMPLETE`). `factlama-observability`'s `operations/config.py` foundation (env-var resolution helpers) was already done for OBS-01's own scope.
 - [x] Add lint/type/test/CI foundations. `factlama-reliability`: ruff/mypy/pytest/`import-linter`, `.github/workflows/ci.yml` across Python 3.10-3.12, confirmed green on GitHub Actions (run [34754686765](https://github.com/Factlama/factlama-reliability/actions/runs/34754686765)). `factlama-observability`: same Python toolchain (22 tests, 100% coverage on `operations/`) plus a dashboard toolchain (eslint/tsc/vitest/build, 0 audited npm vulnerabilities); `.github/workflows/ci.yml` confirmed green on GitHub Actions on first push (run [34756423331](https://github.com/Factlama/factlama-observability/actions/runs/34756423331), all 4 jobs).
 - [x] Add API/schema versioning conventions. `factlama-reliability`: pre-existing (`schema_version="0.1"`). [`contracts/v0.1/`](../contracts/README.md) JSON Schemas make the rule (reject unknown major, accept unknown minor) machine-checked. `factlama-observability`'s `operations/versioning.py` enforces the identical rule for its own future wire types; nothing emits/accepts a real payload yet.
 - [x] Add dependency boundary rules. `factlama-reliability`: `import-linter` contracts (`schemas` has no internal dependencies; `schemas`/`core` cannot reach a vendor model SDK, even transitively), enforced in CI. `factlama-observability`: `import-linter` contracts (`sdk` cannot depend on `collector`/`storage`/`query`; `storage` cannot depend on `collector`/`query`/`sdk`; `query` cannot depend on `collector`/`sdk`), all `KEPT`.
 
-**Exit:** clean checkout builds/tests and architecture boundaries are documented/enforced. `factlama-observability`'s OBS-01 is now `COMPLETE`, confirmed by an actual GitHub Actions run, not just local reproduction. Stays `IN_PROGRESS` solely on `factlama-reliability`'s own deferred configuration-model/health item (REL-01, owed to REL-12) -- this epic closes when that lands, not before.
+**Exit:** clean checkout builds/tests and architecture boundaries are documented/enforced. `factlama-observability`'s OBS-01 is `COMPLETE`, confirmed by an actual GitHub Actions run, not just local reproduction. `factlama-reliability`'s REL-01 is now also `COMPLETE`, once REL-12's API gave the deferred configuration-model/health item a real home. Both foundations closed.
 
 ### EPIC-02 Tenancy and security foundation — STATUS: IN_PROGRESS
 - [x] Tenant/project/application identity model. `factlama-reliability`'s `schemas/tenancy.py` `TenantContext` (tenant_id + optional project/application scope, with a real `authorizes()` check, tested) -- see REL-02. `factlama-observability`'s `schemas/tenancy.py` has the identical model -- see OBS-02.
-- [ ] Tenant context propagation. Nowhere to propagate through yet in either repo: no authenticated API (G3), no ingress (OBS-04), no async/persistence (G5/OBS-06). `Verifier.verify()`'s trusted `tenant_id` argument is unchanged.
+- [ ] Tenant context propagation. `factlama-reliability` closed for its own scope: `api/app.py`'s synchronous `POST /v0.1/verifications` authenticates to a `TenantContext` and calls `.authorizes()` before dispatch -- a real API now exists to construct one from. `factlama-observability` still has nowhere to propagate through: no ingress (OBS-04), and neither repo has async/persistence (G5/OBS-06) yet.
 - [ ] Tenant-aware persistence/query interfaces. `factlama-reliability`'s `core/repository.py` `TenantAwareRepository` `Protocol` exists as a contract with zero implementations (no persistence exists to implement it against). `factlama-observability` has none yet.
-- [ ] Cross-tenant negative tests. Both repos' `TenantContext.authorizes()` have real negative tests; a test against a real API/ingress/data store needs G3/OBS-04/G5/OBS-06 to exist first.
+- [ ] Cross-tenant negative tests. `factlama-reliability` closed for its own scope: `tests/test_api.py::TestCrossTenantIsolation` is a genuine forged-tenant-field/cross-tenant test against the live API (403 on a scoped credential's mismatched project, 400 on a body-supplied `tenant_id`), not just `TenantContext.authorizes()` unit tests. `factlama-observability` still needs OBS-04's ingress to exist to attack; neither repo can test the persistence half yet (G5/OBS-06).
 - [x] Bounded payload validation (ingress-side). `factlama-observability`'s `operations/payload_bounds.py` (body size, attribute count, attribute value length), tested. No ingress calls it yet (OBS-04).
 - [ ] Secret/provider credential boundaries. Nothing to bound yet -- no provider in either repo uses an external credential today.
 - [ ] Capture/redaction configuration model.
 - [ ] Separate provider registration, tenant approval, credential use and content-read permissions.
 - [ ] Enforce judge-egress destination, secret-scope and adapter trust-tier boundaries before opening customer judges.
 
-**Exit:** cross-tenant access fails safely; metadata-only operation works. Far from met: only the typed-context groundwork that's testable without a live API or persistence exists so far.
+**Exit:** cross-tenant access fails safely; metadata-only operation works. Met for `factlama-reliability`'s synchronous API path. `factlama-observability` still has no live boundary to test against (OBS-04), and neither repo has persistence (G5/OBS-06) -- those remain the real gap, not an oversight.
 
 ## Phase B — Reliability Engine
 
@@ -44,20 +44,21 @@ Claude must update task status only after acceptance criteria and tests pass.
 
 **Exit:** the worked fixture and negative variants round-trip in both implementation repos; no scalar-only provider assumption remains. Met for `VerificationRequest`/`VerificationResult`/`ReliabilityEvent`. Stays `IN_PROGRESS`: `factlama-observability`'s `AITrace`/span/resource model has no executable `contracts/v0.1` schema to round-trip against yet -- only prose exists, and OBS-03's remaining scope is deliberately waiting on that rather than guessing a shape.
 
-### EPIC-04 First groundedness evaluator — STATUS: NOT_STARTED
-- [ ] Claim extraction/segmentation.
-- [ ] Evidence mapping.
-- [ ] JudgeProvider abstraction.
-- [ ] First provider adapter.
-- [ ] Claim-level supported/contradicted/unsupported/insufficient findings.
-- [ ] Transparent scoring and overall verdict.
-- [ ] Golden evaluation tests.
-- [ ] Enforce one-claim-per-call, evidence instruction/data separation and deterministic response validation.
-- [ ] Enforce per-request/per-tenant token/cost ceilings and claim/evidence fan-out caps before dispatch, including retry/fallback accounting.
-- [ ] Record judge attempt usage/cost; BYO-key is the default.
-- [ ] Include adversarial-evidence fixtures and injection-suspected policy routing.
+### EPIC-04 First groundedness evaluator — STATUS: IN_PROGRESS
+- [x] Claim extraction/segmentation. `factlama-reliability`'s `EnhancedClaimExtractor` (clause-level splitting); explicit caller-supplied claims are now consumed unchanged when present (REL-04).
+- [x] Evidence mapping. `SimpleEvidenceMapper` (word-overlap/negation heuristic).
+- [x] JudgeProvider abstraction. `judges/port.py`'s bounded `JudgeProvider.evaluate()` port.
+- [x] First provider adapter. T0 in-process (ADR-011): `EmbeddingProvider`/`NLIProvider`, real downloaded models, no vendor API key -- see REL-06.
+- [x] Claim-level supported/contradicted/unsupported/insufficient findings. `judge-provider.md`'s response-validation chain (`validate_judge_result` -> `apply_citation_support_check` -> `detect_evidence_injection`).
+- [x] Transparent scoring and overall verdict. `core/scoring.py`'s claim-ratio formulas and `determine_verdict()`.
+- [x] Golden evaluation tests. `tests/test_verifier.py::TestGoldenCases` plus this pass's `tests/test_dispatch_gates.py`/`tests/test_api.py`.
+- [x] Enforce one-claim-per-call, evidence instruction/data separation and deterministic response validation. Pre-existing (`JudgeRequest` carries exactly one claim; evidence is a separate typed field, never concatenated into instructions).
+- [ ] Enforce per-request/per-tenant token/cost ceilings and claim/evidence fan-out caps before dispatch, including retry/fallback accounting. Per-request claim/evidence fan-out caps now enforced (`core/budgets.py`, REL-04/REL-07). Per-tenant token/cost ceilings and retry/fallback accounting remain G5's -- there is no retry/fallback to account for yet.
+- [ ] Record judge attempt usage/cost; BYO-key is the default. `Attempt.usage`/`JudgeResult.usage` exist and are plumbed through, but no current T0 adapter reports a non-default `Usage` -- the in-process embedding/NLI models incur no per-call token/dollar cost to report. This item stays open until a metered adapter (a vendor LLM judge, or a T0 adapter with real compute accounting) exists.
+- [x] Include adversarial-evidence fixtures. `tests/test_dispatch_gates.py::TestEvidenceInjectionDefense`: an injection-laden but genuinely irrelevant evidence fixture never becomes SUPPORTED, and a genuinely-supporting-but-injection-laden fixture is flagged `EVIDENCE_INJECTION_SUSPECTED`, not silently ignored.
+- [ ] Injection-suspected policy routing. The violation is surfaced in the result, but `PolicyEngine.evaluate()` does not yet special-case `EVIDENCE_INJECTION_SUSPECTED` into a specific action (e.g. forcing `HUMAN_REVIEW`) the way it does for `TOOL_ERROR`. Open.
 
-**Exit:** a T0 adapter produces valid supported/contradicted/unsupported/insufficient findings, while timeout, exhausted budget and suspected injection cannot silently produce PASS.
+**Exit:** a T0 adapter produces valid supported/contradicted/unsupported/insufficient findings, while timeout, exhausted budget and suspected injection cannot silently produce PASS -- met. Not yet met: judge usage/cost recording (no metered adapter exists yet) and explicit injection-suspected policy routing.
 
 ### EPIC-04b Evaluator agreement and qualification harness — STATUS: NOT_STARTED
 - [ ] Public development and FactLama-held-out fixture sets with leakage controls.
