@@ -254,4 +254,4 @@ An Observability task is complete only when implementation, tests, failure paths
 
 ## License
 
-MIT. Third-party SDKs, exporters and storage dependencies retain their own licenses and must be reviewed independently.
+Apache License 2.0. Contributor instructions are in the implementation repository's `CONTRIBUTING.md`. Third-party SDKs, exporters and storage dependencies retain their own licenses and must be reviewed independently.

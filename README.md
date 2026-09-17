@@ -574,4 +574,4 @@ Anything short of this is an implementation milestone, not MVP completion.
 
 ## License
 
-MIT. Keep third-party dependencies and model licenses independently reviewed; MIT licensing of FactLama code does not automatically make third-party model weights or datasets MIT-compatible.
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Contributions are accepted under the process in [CONTRIBUTING.md](CONTRIBUTING.md). Third-party dependencies, model weights and datasets retain their own licenses and must be reviewed independently.

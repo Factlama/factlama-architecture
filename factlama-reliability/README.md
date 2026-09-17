@@ -280,4 +280,4 @@ A Reliability task is complete only when implementation, unit tests, integration
 
 ## License
 
-MIT. Third-party model weights, datasets and SDKs retain their own licenses and must be reviewed independently.
+Apache License 2.0. Contributor instructions are in the implementation repository's `CONTRIBUTING.md`. Third-party model weights, datasets and SDKs retain their own licenses and must be reviewed independently.
