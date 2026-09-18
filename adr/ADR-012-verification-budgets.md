@@ -1,6 +1,8 @@
 # ADR-012: Verification Budgets and Cost Ownership
 
-Status: Accepted
+Status: Accepted; enforcement delivery scope amended by [ADR-017](ADR-017-mvp-unmetered-evaluators.md).
+
+Delivery scope (2026-09-18): MVP uses local, unmetered evaluators. Hard token/cost ceilings are a post-MVP prerequisite for enabling the first metered adapter; claim/evidence and execution limits remain MVP requirements. The decision below describes the target metered capability.
 
 Decision: Verification enforces a first-class budget: per-request and per-tenant-per-window token and cost ceilings, checked before dispatch and decremented across retries and fallback attempts, plus a hard `MAX_CLAIMS_PER_REQUEST` and `MAX_EVIDENCE_PER_CLAIM`. Exceeding a budget produces `ABSTAINED`/`ABSTAIN` with a new typed reason, `BUDGET_EXHAUSTED` — consistent with the existing rule that a technical failure yields abstention, never a factual verdict — and emits an alertable metric. Judge usage (tokens, cost, latency) returned by `JudgeResult` is plumbed through `provenance` into `ReliabilityEvent` and stored, so verification cost is queryable per tenant, per provider, and per mode. Bring-your-own-key is the default and only economic model: the tenant's credential is used to call the tenant's approved provider, billed directly by that provider to the tenant; FactLama does not broker or mark up model calls.
 

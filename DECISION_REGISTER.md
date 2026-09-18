@@ -20,6 +20,7 @@ The numbered files in `adr/` are authoritative; summary prose elsewhere is descr
 | 014 | Evaluator registry lifecycle, model pinning, and compliance-constrained provider selection |
 | 015 | Multi-judge reconciliation deferred, but provenance/finding shapes provisioned in v0.1 |
 | 016 | Centralized component documentation and task ledgers in the architecture repository |
+| 017 | Local unmetered evaluators for MVP; hard token/cost limits required before post-MVP metered enablement |
 
 Architecture owns [cross-repository contracts](CONTRACTS.md), repository boundaries and MVP gates. Reliability owns detailed evaluator, scoring and policy behavior; Observability owns telemetry, collector, query and dashboard behavior. A change to a shared field, verdict meaning, tenant boundary or correlation key requires an architecture ADR and coordinated compatibility tests. A local implementation detail requires a local ADR only when it changes a stable dependency or operational boundary.
 
