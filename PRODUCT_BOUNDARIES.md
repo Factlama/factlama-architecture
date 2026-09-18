@@ -29,4 +29,4 @@ Simple by default, interoperable by design.
 
 ## Judge-call economics
 
-The default and only initial economic model is bring-your-own-key: tenants provide approved provider credentials and pay providers directly. FactLama enforces verification budgets and reports judge usage/cost, but does not broker or mark up model calls. A hosted/brokered tier would require a new ADR and abuse/billing model.
+The economic model for future metered adapters is bring-your-own-key: tenants provide approved provider credentials and pay providers directly. MVP supports local, unmetered evaluators with resource limits and available usage reporting. Metered providers and BYO-key dispatch are post-MVP, gated on hard budget enforcement under [ADR-017](adr/ADR-017-mvp-unmetered-evaluators.md). FactLama does not broker or mark up model calls. A hosted/brokered tier would require a new ADR and abuse/billing model.

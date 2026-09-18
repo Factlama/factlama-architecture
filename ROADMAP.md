@@ -44,7 +44,7 @@ Claude must update task status only after acceptance criteria and tests pass.
 
 **Exit:** the worked fixture and negative variants round-trip in both implementation repos; no scalar-only provider assumption remains. Met for `VerificationRequest`/`VerificationResult`/`ReliabilityEvent`. Stays `IN_PROGRESS`: `factlama-observability`'s `AITrace`/span/resource model has no executable `contracts/v0.1` schema to round-trip against yet -- only prose exists, and OBS-03's remaining scope is deliberately waiting on that rather than guessing a shape.
 
-### EPIC-04 First groundedness evaluator — STATUS: IN_PROGRESS
+### EPIC-04 First groundedness evaluator — STATUS: COMPLETE
 - [x] Claim extraction/segmentation. `factlama-reliability`'s `EnhancedClaimExtractor` (clause-level splitting); explicit caller-supplied claims are now consumed unchanged when present (REL-04).
 - [x] Evidence mapping. `SimpleEvidenceMapper` (word-overlap/negation heuristic).
 - [x] JudgeProvider abstraction. `judges/port.py`'s bounded `JudgeProvider.evaluate()` port.
@@ -53,20 +53,20 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [x] Transparent scoring and overall verdict. `core/scoring.py`'s claim-ratio formulas and `determine_verdict()`.
 - [x] Golden evaluation tests. `tests/test_verifier.py::TestGoldenCases` plus this pass's `tests/test_dispatch_gates.py`/`tests/test_api.py`.
 - [x] Enforce one-claim-per-call, evidence instruction/data separation and deterministic response validation. Pre-existing (`JudgeRequest` carries exactly one claim; evidence is a separate typed field, never concatenated into instructions).
-- [ ] Enforce per-request/per-tenant token/cost ceilings and claim/evidence fan-out caps before dispatch, including retry/fallback accounting. Per-request claim/evidence fan-out caps now enforced (`core/budgets.py`, REL-04/REL-07). Per-tenant token/cost ceilings and retry/fallback accounting remain G5's -- there is no retry/fallback to account for yet.
-- [ ] Record judge attempt usage/cost; BYO-key is the default. `Attempt.usage`/`JudgeResult.usage` exist and are plumbed through, but no current T0 adapter reports a non-default `Usage` -- the in-process embedding/NLI models incur no per-call token/dollar cost to report. This item stays open until a metered adapter (a vendor LLM judge, or a T0 adapter with real compute accounting) exists.
+- [x] Pre-dispatch claim/evidence fan-out caps are implemented. Fixed reservations and post-call usage checks are provisional safeguards, not hard token/cost ceilings. ADR-017 defers hard request/tenant spending enforcement to post-MVP metered enablement; accounting correctness remains required.
+- [x] Record judge attempt usage/cost; BYO-key is the default. Fixed a real gap found while enforcing the ceiling above: `JudgeResult.usage` was computed but never copied onto `Attempt.usage`, and `VerificationResultBuilder.with_usage_summary()` existed but was never called -- `VerificationResult.usage_summary` was always the empty default regardless of what a provider reported. Both are now wired (`core/verifier.py`, `core/budgets.py::summarize_usage`). No current T0 adapter reports a non-default `Usage` -- the in-process embedding/NLI models incur no per-call token/dollar cost to report -- so this remains untested against real values until a metered adapter (a vendor LLM judge, or a T0 adapter with real compute accounting) exists; the plumbing itself is tested with a metered stub provider (`tests/test_dispatch_gates.py::TestUsageBudget`/`TestVerifierUsageBudgetGate`).
 - [x] Include adversarial-evidence fixtures. `tests/test_dispatch_gates.py::TestEvidenceInjectionDefense`: an injection-laden but genuinely irrelevant evidence fixture never becomes SUPPORTED, and a genuinely-supporting-but-injection-laden fixture is flagged `EVIDENCE_INJECTION_SUSPECTED`, not silently ignored.
-- [ ] Injection-suspected policy routing. The violation is surfaced in the result, but `PolicyEngine.evaluate()` does not yet special-case `EVIDENCE_INJECTION_SUSPECTED` into a specific action (e.g. forcing `HUMAN_REVIEW`) the way it does for `TOOL_ERROR`. Open.
+- [x] Injection-suspected policy routing. `PolicyEngine.evaluate()` now forces `PolicyAction.HUMAN_REVIEW` whenever an `EVIDENCE_INJECTION_SUSPECTED` violation is present (ADR-013), closing this gap -- see REL-09. `tests/test_dispatch_gates.py::test_injection_suspected_forces_human_review_policy_action`.
 
-**Exit:** a T0 adapter produces valid supported/contradicted/unsupported/insufficient findings, while timeout, exhausted budget and suspected injection cannot silently produce PASS -- met. Not yet met: judge usage/cost recording (no metered adapter exists yet) and explicit injection-suspected policy routing.
+**Exit:** a T0 adapter produces valid supported/contradicted/unsupported/insufficient findings, while timeout, exhausted budget and suspected injection cannot silently produce PASS -- met. Judge usage/cost recording and injection-suspected policy routing are now also met; the remaining caveat is that no current T0 adapter reports a non-default usage value to exercise the recording path against in production, only in tests.
 
-### EPIC-04b Evaluator agreement and qualification harness — STATUS: NOT_STARTED
-- [ ] Public development and FactLama-held-out fixture sets with leakage controls.
-- [ ] One-command conformance and agreement runner for every adapter.
-- [ ] Versioned report with per-label quality, adversarial cases, latency, tokens and cost.
-- [ ] Calibration-class derivation and a minimal pinned/approved default-judge gate.
+### EPIC-04b Evaluator agreement and qualification harness — STATUS: IN_PROGRESS
+- [ ] Public development and FactLama-held-out fixture sets with leakage controls. Design closed (`factlama-reliability/docs/evaluator-agreement-harness.md`: fixture families, dev/held-out split, leakage-control rule). Not closed: the actual hand-reviewed datasets. Today's public dev set (`scripts/run_agreement_harness.py::dev_fixtures()`) is 6 illustrative fixtures, not a reviewed corpus; the held-out set does not exist.
+- [x] One-command conformance and agreement runner for every adapter. `scripts/run_agreement_harness.py` -- `python scripts/run_agreement_harness.py --provider <mock|rule-based>` produces one JSON report. Runs against the dev set only today (see above); wiring in `EmbeddingProvider`/`NLIProvider` needs their vendor extras, not a code change.
+- [x] Versioned report with per-label quality, adversarial cases, latency, tokens and cost. `score_provider()`'s report: `report_version`, per-label precision/recall/F1 (never pooled across labels), `adversarial.flipped_to_supported`, `latency_ms.p50/p95`. Tokens/cost fields are not yet in the report (no fixture provider reports usage; see REL-07's usage-plumbing note) -- a real gap, not silently dropped.
+- [x] Calibration-class derivation and a minimal pinned/approved default-judge gate. Calibration-class derivation (`derive_calibration_class()`) predates this epic (REL-08). The minimal gate is new: `core/qualification.py`'s `QualificationRecord`/state machine and `is_default_eligible()` enforce `TENANT_APPROVED` + pinned + compliance-tag-satisfied before default eligibility -- unwired into any real dispatch path yet (there is no "tenant's configured default provider" concept in this codebase; that needs G5 persistence), tested in isolation (`tests/test_qualification.py`, 20 tests).
 
-**Exit:** the first T0 adapter has a reproducible agreement report and cannot become a tenant's default judge without `QUALIFIED` and tenant approval. EPIC-12 reuses this harness for the SLM.
+**Exit:** not yet met. The runner/report/gate *mechanism* now exists and is tested, but "the first T0 adapter has a reproducible agreement report" needs the real dev+held-out datasets above, not 6 illustrative fixtures, and nothing calls `is_default_eligible()` from a real selection path yet. No adapter has been granted `QUALIFIED` by this pass. EPIC-12 reuses this harness for the SLM once both are real.
 
 ### EPIC-05 Content governance — STATUS: NOT_STARTED
 - [ ] NONE/METADATA_ONLY/REDACTED/FULL capture modes.
@@ -150,6 +150,20 @@ Claude must update task status only after acceptance criteria and tests pass.
 - [ ] Enterprise exporters/integrations.
 - [ ] Upgrade/deprecation/support policies.
 
+## Post-MVP metered evaluator enablement — STATUS: NOT_STARTED
+
+Owner: EPIC-07 / REL-13, governed by [ADR-017](adr/ADR-017-mvp-unmetered-evaluators.md).
+
+- [ ] Versioned provider limits and request-derived input/output cost bounds.
+- [ ] Atomic request and tenant-window reservations across concurrency, retries and fallback.
+- [ ] Provider-enforced caps; reject unsupported limits or unknown pricing under hard-budget policy.
+- [ ] Durable usage reconciliation, reservation recovery and release of unused capacity.
+- [ ] Real-adapter acceptance tests, including first-call overspend prevention and unknown/mixed-currency accounting.
+
+Metered dispatch remains unsupported until all acceptance criteria pass. Existing accounting bugs are not deferred by this milestone.
+
 ## MVP completion gate
 
 MVP is complete only when a developer can start FactLama locally, instrument an LLM/RAG request, ingest telemetry, run groundedness evaluation against evidence, see claim-level results and provenance, correlate the evaluation to the trace, inspect it in the dashboard, and run documented API/SDK examples with automated security/contract/integration tests passing.
+
+MVP evaluator boundary: local, unmetered providers only (ADR-017). Hard monetary/token ceilings are post-MVP; payload, claim/evidence, execution and retry limits remain MVP requirements.
