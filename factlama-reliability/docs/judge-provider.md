@@ -5,3 +5,7 @@ The normalized `JudgeRequest`/`JudgeResult` port is defined in the [shared contr
 The registry selects an allowlisted tenant-approved provider and immutable configuration version. Credentials are resolved at call time from a secret reference; neither credentials nor raw provider payloads enter result/telemetry persistence. Apply a request deadline, bounded concurrency, rate limits and cancellation. Retry only transient errors within the same logical evaluation and deadline; never retry an invalid response indefinitely. A fallback provider is a policy decision recorded in provenance, not a hidden adapter behavior.
 
 Contract tests should run the same supported, contradicted, unsupported, ambiguous, timeout, rate-limit and malformed-response fixtures against each adapter. A provider's confidence is not a calibrated FactLama score until benchmarked.
+
+## MVP provider eligibility and post-MVP spending limits
+
+[ADR-017](../../adr/ADR-017-mvp-unmetered-evaluators.md) limits MVP to local, unmetered evaluators. Qualification does not override this boundary. Fixed reservations do not constrain provider spending. Before any metered adapter is enabled, a coordinated versioned port/schema change must support request-derived estimates and limits that the provider actually enforces, with atomic reservations and reconciliation. Providers lacking the required pricing or enforceable limits must not dispatch under hard-budget policy. The existing v0.1 port is not extended by this documentation change.
